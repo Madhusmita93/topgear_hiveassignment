@@ -1,0 +1,52 @@
+Q1...	Creating blank table:-
+			create table movie_rating(
+				userid int, 
+				itemid int, 
+				rating tinyint, 
+				timestamp int
+			)
+			row format delimited
+			fields terminated by '\t';
+			
+		Loading data:-
+			load data loacl inpath '/home/cloudera/Downloads/u.data' overwrite into table movie_rating;
+			
+		
+			
+Q2...	Creating bucked table:-
+			create table bucket(
+				userid int, 
+				itemid int,
+				rating tinyint, 
+				timestamp int
+			)
+			clustered by (userid) into 3 buckets
+			row format delimited
+			fields terminated by '\t';
+			
+	Inserting data to bucketed table:-
+			from movie_rating insert overwrite table bucket
+			select userid, itemid, rating, timestamp;
+			
+Q3...	Counting records loaded in each bucket:-
+			select count(*) 
+			from bucket 
+			tablesample( bucket 1 out of 3 on userid);
+			
+			select count(*) 
+			from bucket 
+			tablesample( bucket 2 out of 3 on userid);
+			
+			select count(*) 
+			from bucket 
+			tablesample( bucket 3 out of 3 on userid);
+			
+Q4...   Fetching Avg rating:-
+			select avg(rating) 
+			from bucket 
+			tablesample(5 percent);
+			
+Q5...   Fetching Avg rating on 3rd bucket:-
+			select avg(rating) 
+			from bucket 
+			tablesample( bucket 1 out of 3 on userid); 

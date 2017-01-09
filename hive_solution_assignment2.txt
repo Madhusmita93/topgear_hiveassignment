@@ -1,0 +1,65 @@
+Q1...	Creating database:-
+			create database db2;
+			
+			use db2;
+		
+        Creating Managed table:-
+			create table data(
+				userid int,
+				age tinyint,
+				gender string,
+				occupation string,
+				zipcode string
+			)
+			row format delimited 
+			fields terminated by '|';
+			
+Q2...	Loading data from external file to a blank table:-
+			load data local inpath '/home/cloudera/Downloads/u.user' overwrite into table data;
+			
+		Verifying the loaded data:-
+			select * from data limit 100;
+			
+Q3...	Creating partitioned table:-
+			create table data_part(
+				userid int,
+				age tinyint,
+				occupation string,
+				zipcode string
+			)
+			partitioned by (gender string)
+			row format delimited 
+			fields terminated by '|';
+			
+	Inserting data:-
+			insert overwrite table data_part
+			partition (gender='M') 
+			select userid, age, occupation, zipcode 
+			from data 
+			where gender='M';			
+			
+Q4...	List HDFS filesystem and list the HDFS file created for partitioned table:-
+			hadoop fs -ls /user/hive/warehouse/db2.db/data_part
+			
+Q5...  Quering Avg age of female audience-
+			Non Partitioned Managed Table:-
+				select avg(age) from data where gender='F';
+
+				
+				
+				
+			Partitioned:-
+				select avg(age) from data_part where gender='F';
+				
+				
+		
+	Quering	For Avg age of male audience- 
+			Non Partitioned Managed Table:-
+				select avg(age) from data where gender='M';
+				
+				
+				
+			Partitioned:-
+				select avg(age) from data_part where gender='M';
+				
+				

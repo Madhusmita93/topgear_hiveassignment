@@ -1,0 +1,60 @@
+Q1.. Creating folder in hadoop:-
+			hadoop -fs mkdir /user/hadoopTraining
+			hadoop -fs mkdir /user/hadoopTraining/Assignment1
+			hadoop -fs mkdir /user/hadoopTraining/Assignment1/input
+			
+     Copying file from local to hadoop:-
+			hadoop fs -copyFromLocal /home/cloudera/Downloads/bhav040416_080416.csv /user/hadoopTraining/Assignment1/input/
+			
+Q2.. Creating and Using Databse in Hive:-
+			create database db;
+			
+			use db;
+			
+     Creating table and loading data into table:-
+			create external table stockTrdData(
+				symbol string,
+				series string,
+				price_open float,
+				price_high float,
+				price_low float,
+				price_close float,
+				price_last float,
+				price_prevclose float,
+				total_trdqty int,
+				total_trdval float,
+				timestamp string,
+				total_trades int,
+				isin string
+			)
+			row format delimited fields terminated by ','
+			location '/user/hadoopTraining/Assignment1/input/';
+			
+      Validating data:-
+			select * from stockTrdData limit 100;
+			
+Q3.. Using HQL list symbol on each series with highest TOTTRDVAL :-
+			insert overwrite directory '/user/hadoopTraining/Assignment1/output/'
+			row format delimited fields terminated by ','
+			stored as textfile
+			select symbol,series, max(total_trdval) as max_trd_val 
+			from stockTrdData 
+			group by symbol,series;
+			
+		
+			
+Q4.. Using HQL list symbol on each series with highest TOTTRQTY:-
+			insert overwrite directory '/user/hadoopTraining/Assignment1/output/'
+			row format delimited fields terminated by ','
+			stored as textfile
+			select symbol,series, max(total_trdqty) as max_trd_qty 
+			from stockTrdData 
+			group by symbol,series;
+			
+		
+			
+Q5.. Using HQL list symbol on only EQ series with highest TOTTRQTY:-
+			select symbol, max(total_trdqty) as max_trd_qty 
+			from stockTrdData 
+			where series='EQ' 
+			group by symbol;
